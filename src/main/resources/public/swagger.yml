@@ -1,0 +1,233 @@
+swagger: "2.0"
+info:
+  description: "Widget REST API"
+  version: "1.0.0"
+  title: "Swagger widget-api"
+schemes:
+- "http"
+paths:
+  /widgets:
+    post:
+      summary: "Add a new widget to the store"
+      description: "If z index is null widget moves to foreground. If z is not null then the new widget shifts all widgets with the same and greater index upwards." 
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Widget that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/WidgetSource"
+      responses:
+        400:
+          description: "Invalid widget source"
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/Widget"
+          
+    get:
+      summary: "Get widgets with pagination and optionally by filtering"
+      description: "Returns the requested page of the widgets ordered by z index from smallest to largest. If all the filtering values are present returns only the widgets falling inside the defined rectangle"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "minX"
+        description: "Lower left x value for rectangle filtering"
+        required: false
+        type: integer
+      - in: "query"
+        name: "minY"
+        description: "Lower left y value for rectangle filtering"
+        required: false
+        type: integer
+      - in: "query"
+        name: "maxX"
+        description: "Upper right x value for rectangle filtering"
+        required: false
+        type: integer
+      - in: "query"
+        name: "maxY"
+        description: "Upper right y value for rectangle filtering"
+        required: false
+        type: integer
+      - in: "query"
+        name: "page"
+        description: "Page number default 0"
+        required: false
+        type: integer
+      - in: "query"
+        name: "size"
+        description: "Page size max 500 default 10"
+        required: false
+        type: integer
+      responses:
+        400:
+          description: "Invalid size or Invalid filter parameters"
+        200:
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/WidgetPage"
+          
+  /widgets/{id}:
+    get:
+      summary: "Get widget by id"
+      description: "Returns widget with id"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Widget id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Widget"
+        404:
+          description: "Widget not found"
+          
+    patch:
+      summary: "Update widget by id"
+      description: "Updates widget with new values"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Widget id"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Widget values to be updateed"
+        required: true
+        schema:
+          $ref: "#/definitions/WidgetPatchSource"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Widget"
+        404:
+          description: "Widget not found"
+          
+                    
+    delete:
+      summary: "Delete widget by id"
+      description: "Remove widget with id"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Widget id"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "successful operation"
+        404:
+          description: "Widget not found"
+          
+definitions:
+  Widget:
+    type: "object"
+    required:
+    - "id"
+    - "x"
+    - "y"
+    - "z"
+    - "width"
+    - "heigth"
+    - "lastModification"
+    properties:
+      id:
+        type: "string"
+      x:
+        type: "integer"
+      y:
+        type: "integer"
+      z:
+        type: "integer"
+      width:
+        type: "integer"
+        description: "Minimum 1"
+      heigth:
+        type: "integer"
+        description: "Minimum 1"
+      lastModification:
+        type: "string"
+        format: "datetime"
+        
+  WidgetPage:
+    type: "object"
+    required:
+    - "page"
+    - "content"
+    properties:
+      content:
+        type: "array"
+        items:
+          $ref: "#/definitions/Widget"
+      page:
+        type: "object"
+        properties:
+          totalElements:
+            type: integer
+          totalPages:
+            type: integer
+          number:
+            type: integer
+          size:
+            type: integer
+            
+  WidgetSource:
+    type: "object"
+    required:
+    - "x"
+    - "y"
+    - "width"
+    - "heigth"
+    properties:
+      x:
+        type: "integer"
+      y:
+        type: "integer"
+      z:
+        type: "integer"
+      width:
+        type: "integer"
+        description: "Minimum 1"
+      heigth:
+        type: "integer"
+        description: "Minimum 1"
+            
+            
+  
+  WidgetPatchSource:
+    type: "object"
+    properties:
+      x:
+        type: "integer"
+        description: "can not be null"
+      y:
+        type: "integer"
+        description: "can not be null"
+      z:
+        type: "integer"
+        description: "can not be null"
+      width:
+        type: "integer"
+        description: "can not be null. Minimum 1"
+      heigth:
+        type: "integer"
+        description: "can not be null. Minimum 1"

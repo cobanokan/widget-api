@@ -1,0 +1,7 @@
+Documentation of the api can be found as a swagger file which is published by the application under "/swagger.yml" path
+
+To run the application:
+	> mvn spring-boot:run 
+	
+To run the application in H2 mode change "h2.enabled" property to true
+	> mvn spring-boot:run -Drun.arguments=--h2.enabled=true
