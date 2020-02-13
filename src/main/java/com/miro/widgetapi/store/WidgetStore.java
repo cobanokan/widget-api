@@ -14,7 +14,7 @@ public interface WidgetStore {
 	public void removeWidget(String id);
 	public void shiftWidgetsAboveZUpwards(Integer z);
 	public Integer getNextZ();
-	Page<WidgetEntity> getSortedWidgets(Pageable pageable);
-	Page<WidgetEntity> getSortedAndFilteredWidgets(RectangleFilter filter, Pageable pageable);
+	Page<WidgetEntity> getWidgetsSortedByZ(Pageable pageable);
+	Page<WidgetEntity> getWidgetsSortedByZAndFiltered(RectangleFilter filter, Pageable pageable);
 	public WidgetEntity update(WidgetEntity entity);
 }

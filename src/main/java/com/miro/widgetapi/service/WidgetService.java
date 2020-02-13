@@ -72,9 +72,9 @@ public class WidgetService {
 			lock.readLock().lock();
 			logger.info("getting requested widgets page {} filter {}", pageable, filter);
 			if(filter.isValidToUse()) {
-				return store.getSortedAndFilteredWidgets(filter, pageable);
+				return store.getWidgetsSortedByZAndFiltered(filter, pageable);
 			} else {
-				return store.getSortedWidgets(pageable);
+				return store.getWidgetsSortedByZ(pageable);
 			}
 		} finally {
 			lock.readLock().unlock();

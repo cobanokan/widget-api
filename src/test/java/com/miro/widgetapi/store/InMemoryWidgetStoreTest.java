@@ -37,7 +37,7 @@ class InMemoryWidgetStoreTest {
 		assertTrue(getWidget.isPresent());
 		assertHavingSameValues(widget, getWidget.get());
 			
-		Page<WidgetEntity> widgets = store.getSortedWidgets(PageRequest.of(0, 10));
+		Page<WidgetEntity> widgets = store.getWidgetsSortedByZ(PageRequest.of(0, 10));
 		assertEquals(1, widgets.getTotalElements());
 		assertHavingSameValues(widget, widgets.get().iterator().next());
 	}
@@ -51,7 +51,7 @@ class InMemoryWidgetStoreTest {
 		Optional<WidgetEntity> getWidget = store.getWidget(entity.getId());
 		assertFalse(getWidget.isPresent());
 		
-		assertEquals(0, store.getSortedWidgets(PageRequest.of(0, 10)).getTotalElements());
+		assertEquals(0, store.getWidgetsSortedByZ(PageRequest.of(0, 10)).getTotalElements());
 	}
 	
 	@Test

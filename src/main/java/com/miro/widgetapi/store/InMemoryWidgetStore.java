@@ -1,5 +1,7 @@
 package com.miro.widgetapi.store;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -35,14 +38,14 @@ public class InMemoryWidgetStore implements WidgetStore {
 	}
 	
 	@Override
-	public Page<WidgetEntity> getSortedWidgets(Pageable pageable) {
-		return WidgetStoreUtils.getPage(pageable, sortedWidgets);
+	public Page<WidgetEntity> getWidgetsSortedByZ(Pageable pageable) {
+		return getPage(pageable, sortedWidgets);
 	}
 	
 	@Override
-	public Page<WidgetEntity> getSortedAndFilteredWidgets(RectangleFilter filter, Pageable pageable) {
-    	List<WidgetEntity> filteredEntities =  sortedWidgets.stream().filter(w ->  WidgetStoreUtils.isWidgetInsideRectangle(w, filter)).collect(Collectors.toList());
-    	return  WidgetStoreUtils.getPage(pageable, filteredEntities);
+	public Page<WidgetEntity> getWidgetsSortedByZAndFiltered(RectangleFilter filter, Pageable pageable) {
+    	List<WidgetEntity> filteredEntities =  sortedWidgets.stream().filter(w ->  isWidgetInsideRectangle(w, filter)).collect(Collectors.toList());
+    	return  getPage(pageable, filteredEntities);
 	}
 
 	@Override
@@ -67,5 +70,26 @@ public class InMemoryWidgetStore implements WidgetStore {
 	public WidgetEntity update(WidgetEntity entity) {
 		removeWidget(entity.getId());
 		return save(entity);
+	}
+	
+	public static Page<WidgetEntity> getPage(Pageable pageable, Collection<WidgetEntity> entities) {
+		int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        
+        List<WidgetEntity> content = new ArrayList<WidgetEntity>();
+        if (startItem < entities.size()) {
+        	List<WidgetEntity> copy = new ArrayList<WidgetEntity>(entities);
+            int toIndex = Math.min(startItem + pageSize, copy.size());
+            copy.subList(startItem, toIndex).stream().forEach(w -> content.add(new WidgetEntity(w)));
+        }
+ 
+		return new PageImpl<WidgetEntity>(content, pageable, entities.size());
+	}
+	
+	public static boolean isWidgetInsideRectangle(WidgetEntity widget, RectangleFilter filter) {
+		boolean insideXPlane = filter.getMinX() <= widget.getX() && filter.getMaxX() >= widget.getX() + widget.getWidth();
+		boolean insideYPlane = filter.getMinY() <= widget.getY() && filter.getMaxY() >= widget.getY() + widget.getHeight();
+		return insideXPlane && insideYPlane;
 	}
 }

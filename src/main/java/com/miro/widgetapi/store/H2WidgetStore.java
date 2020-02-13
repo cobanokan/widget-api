@@ -56,7 +56,7 @@ public class H2WidgetStore implements WidgetStore {
 	}
 
 	@Override
-	public Page<WidgetEntity> getSortedWidgets(Pageable pageable) {
+	public Page<WidgetEntity> getWidgetsSortedByZ(Pageable pageable) {
 		return repo.findAllByOrderByZAsc(pageable);
 	}
 
@@ -66,7 +66,7 @@ public class H2WidgetStore implements WidgetStore {
 	}
 
 	@Override
-	public Page<WidgetEntity> getSortedAndFilteredWidgets(RectangleFilter filter, Pageable pageable) {
+	public Page<WidgetEntity> getWidgetsSortedByZAndFiltered(RectangleFilter filter, Pageable pageable) {
 		return repo.findFilteredAndOrdered(filter, pageable);
 	}
 
