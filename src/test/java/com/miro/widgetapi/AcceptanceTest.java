@@ -1,9 +1,12 @@
 package com.miro.widgetapi;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -12,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miro.widgetapi.helper.TestHelper;
 import com.miro.widgetapi.model.PageInfo;
+import com.miro.widgetapi.model.PagedWidget;
 import com.miro.widgetapi.model.Widget;
 import com.miro.widgetapi.model.WidgetSource;
 
@@ -49,7 +53,23 @@ abstract public class AcceptanceTest {
 		getWidgetAndAssert(third, 7);
 		getWidgetAndAssert(fourth, 5);
 		
-		//TODO: and more checks to verify everything works
+		//get widgets and assert correct order
+		PageInfo expectedPageInfo = new PageInfo(4, 1, 10, 0);
+		PagedWidget widgets = convertResponseToPagedWidget(getWidgetsAndAssertPageInfo(expectedPageInfo));
+		List<Widget> content = widgets.getContent();
+		assertEquals(4, content.size());
+		assertEquals(content.get(0).getId(), first.getId());
+		assertEquals(content.get(1).getId(), fourth.getId());
+		assertEquals(content.get(2).getId(), second.getId());
+		assertEquals(content.get(3).getId(), third.getId());
+		
+		//get second page when pagesize is 2
+		widgets = convertResponseToPagedWidget(getWidgetsAndAssertPageInfo(1, 2, new PageInfo(4, 2, 2, 1)));
+		content = widgets.getContent();
+		assertEquals(2, content.size());
+		assertEquals(content.get(0).getId(), second.getId());
+		assertEquals(content.get(1).getId(), third.getId());
+
 	}
 	
 
@@ -83,15 +103,28 @@ abstract public class AcceptanceTest {
       		 .andReturn().getResponse().getContentAsString();
 	}
 	
-	private String getWidgetsAndAssertPageInfo(Integer page, Integer size, PageInfo pageInfo, int contentSize) throws Exception {
+	private String getWidgetsAndAssertPageInfo(PageInfo pageInfo) throws Exception {
 		return mockMvc.perform(get("/widgets")
-			  .accept(MediaType.APPLICATION_JSON))
+			 .accept(MediaType.APPLICATION_JSON))
       		 .andExpect(status().isOk())
       		 .andExpect(jsonPath("$.page.totalElements").value(pageInfo.getTotalElements()))
       		 .andExpect(jsonPath("$.page.totalPages").value(pageInfo.getTotalPages()))
       		 .andExpect(jsonPath("$.page.size").value(pageInfo.getSize()))
       		 .andExpect(jsonPath("$.page.number").value(pageInfo.getNumber()))
-      		 .andReturn().getResponse().getContentAsString();
+     		 .andReturn().getResponse().getContentAsString();
+	}
+	
+	private String getWidgetsAndAssertPageInfo(int page, int size, PageInfo pageInfo) throws Exception {
+		return mockMvc.perform(get("/widgets")
+		     .queryParam("page", String.valueOf(page))
+		     .queryParam("size", String.valueOf(size))
+			 .accept(MediaType.APPLICATION_JSON))
+      		 .andExpect(status().isOk())
+      		 .andExpect(jsonPath("$.page.totalElements").value(pageInfo.getTotalElements()))
+      		 .andExpect(jsonPath("$.page.totalPages").value(pageInfo.getTotalPages()))
+      		 .andExpect(jsonPath("$.page.size").value(pageInfo.getSize()))
+      		 .andExpect(jsonPath("$.page.number").value(pageInfo.getNumber()))
+     		 .andReturn().getResponse().getContentAsString();
 	}
 	
 	private Widget convertResponseToWidget(String contentAsString) {
@@ -103,5 +136,15 @@ abstract public class AcceptanceTest {
 		}
 		return null;
 	};
-
+	
+	private PagedWidget convertResponseToPagedWidget(String contentAsString) {
+		try {
+			return mapper.readValue(contentAsString, PagedWidget.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			fail("Conversion failed");
+		}
+		return null;
+	};
+	
 }

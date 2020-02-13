@@ -11,13 +11,16 @@ import com.miro.widgetapi.entity.WidgetEntity;
 
 public class PagedWidget {
 	
-	public List<Widget> content;
-	public PageInfo page;
+	private List<Widget> content;
+	private PageInfo page;
+	
+	public PagedWidget() {
+	}
 	
 	public PagedWidget(Page<WidgetEntity> page) {
-		this.content = new ArrayList<Widget>();
-		page.forEach(entity -> this.content.add(widgetFromEntity(entity)));
-		this.page = new PageInfo(page.getTotalElements(), page.getTotalPages(), page.getSize(), page.getNumber());
+		this.setContent(new ArrayList<Widget>());
+		page.forEach(entity -> this.getContent().add(widgetFromEntity(entity)));
+		this.setPage(new PageInfo(page.getTotalElements(), page.getTotalPages(), page.getSize(), page.getNumber()));
 	}
 	
 	public List<Widget> getContent() {
@@ -26,5 +29,13 @@ public class PagedWidget {
 	
 	public PageInfo getPage() {
 		return page;
+	}
+
+	public void setContent(List<Widget> content) {
+		this.content = content;
+	}
+
+	public void setPage(PageInfo page) {
+		this.page = page;
 	}
 }
