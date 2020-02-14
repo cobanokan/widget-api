@@ -1,18 +1,22 @@
 WIDGET REST API
 
+A rest api to manage widgets
+
 Built with:
 	Java 8, Spring Boot
 
-Documentation of the api can be found as a swagger file which is published by the application under "/swagger.yml" path
-
-To run the application with default port(8080):
+Run the application with default port(8080):
 	> mvn spring-boot:run 
 
-To run with a different port:
-	> mvn spring-boot:run  -Dspring-boot.run.arguments=--server.port=9090
+Run with a different port:
+	> mvn spring-boot:run  -Dspring-boot.run.arguments=--server.port=8088
 	
-To run the application in H2 mode change "h2.enabled" property to true
+Run the application in H2 mode by changing "h2.enabled" property to "true"
 	> mvn spring-boot:run -Dspring-boot.run.arguments=--h2.enabled=true
 
-To run all integration and unit tests:
+Run all integration and unit tests:
 	> mvn test
+	
+Documentation of the api can be found as a swagger file which is published under "/swagger.yml" path.
+
+To visualize documentation copy the content of swagger.yml in swagger editor(https://editor.swagger.io/)

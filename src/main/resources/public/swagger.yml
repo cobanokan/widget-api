@@ -3,12 +3,13 @@ info:
   description: "Widget REST API"
   version: "1.0.0"
   title: "Swagger widget-api"
+host: "localhost:8080"
 schemes:
 - "http"
 paths:
   /widgets:
     post:
-      summary: "Add a new widget to the store"
+      summary: "Add a new widget"
       description: "If z index is null widget moves to foreground. If z is not null then the new widget shifts all widgets with the same and greater index upwards." 
       consumes:
       - "application/json"
@@ -31,7 +32,7 @@ paths:
           
     get:
       summary: "Get widgets with pagination and optionally by filtering"
-      description: "Returns the requested page of the widgets ordered by z index from smallest to largest. If all the filtering values are present returns only the widgets falling inside the defined rectangle"
+      description: "Returns the requested page of widgets ordered by z index from smallest to largest. If all the filtering values are present returns the widgets falling inside the defined rectangle."
       produces:
       - "application/json"
       parameters:
