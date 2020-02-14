@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +24,7 @@ import com.miro.widgetapi.store.WidgetStore;
 @Component
 public class WidgetService {
 	
-	Logger logger = LogManager.getLogger(WidgetService.class);
+    private static final Logger logger = LoggerFactory.getLogger(WidgetService.class);
 	
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	
@@ -73,9 +73,8 @@ public class WidgetService {
 			logger.info("getting requested widgets page {} filter {}", pageable, filter);
 			if(filter.isValidToUse()) {
 				return store.getWidgetsSortedByZAndFiltered(filter, pageable);
-			} else {
-				return store.getWidgetsSortedByZ(pageable);
 			}
+            return store.getWidgetsSortedByZ(pageable);
 		} finally {
 			lock.readLock().unlock();
 		}

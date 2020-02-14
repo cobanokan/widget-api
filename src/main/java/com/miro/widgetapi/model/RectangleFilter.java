@@ -52,17 +52,16 @@ public class RectangleFilter {
 		if(filterValuePresent()) {
 			if(missingParameters()) {
 				throw new InvalidRectangleFilterException("Missing filter parameters");
-			} else {
-				if(minX > maxX) {
-					throw new InvalidRectangleFilterException("minX can not be more than maxX");
-				}
-				
-				if(minY > maxY) {
-					throw new InvalidRectangleFilterException("minY can not be more than maxY");
-				}
-				
-				return true;
 			}
+            if(minX > maxX) {
+            	throw new InvalidRectangleFilterException("minX can not be more than maxX");
+            }
+            
+            if(minY > maxY) {
+            	throw new InvalidRectangleFilterException("minY can not be more than maxY");
+            }
+            
+            return true;
 		}
 		return false;
 	}

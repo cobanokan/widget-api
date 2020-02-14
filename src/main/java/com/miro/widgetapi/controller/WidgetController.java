@@ -4,8 +4,12 @@ import static com.miro.widgetapi.model.Widget.widgetFromEntity;
 
 import javax.validation.Valid;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+//import org.apache.juli.logging.LogFactory;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,8 +37,8 @@ import com.miro.widgetapi.service.WidgetService;
 @RestController
 @RequestMapping("widgets")
 public class WidgetController {
-	Logger logger = LogManager.getLogger(WidgetController.class);
-	
+    private static final Logger logger = LoggerFactory.getLogger(WidgetController.class);
+
 	private WidgetService service;
 
 	@Autowired
